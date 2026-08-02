@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8">
-<title>Data Lineage — Template</title>
+<title>Data Lineage — Data Tribe</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -745,6 +745,12 @@
     pointer-events:auto;
     transform:translate(-50%,calc(-100% - 20px));
   }
+  .bq-popup.flip-down{
+    transform:translate(-50%,14px);
+  }
+  .bq-popup.flip-down.show{
+    transform:translate(-50%,20px);
+  }
   .bq-popup-arrow{
     position:absolute;
     left:50%; bottom:-6px;
@@ -753,6 +759,12 @@
     border-right:1px solid var(--border);
     border-bottom:1px solid var(--border);
     transform:translateX(-50%) rotate(45deg);
+  }
+  .bq-popup.flip-down .bq-popup-arrow{
+    bottom:auto; top:-6px;
+    border-right:none; border-bottom:none;
+    border-left:1px solid var(--border);
+    border-top:1px solid var(--border);
   }
   .bq-popup-eyebrow{
     font-family:'JetBrains Mono',monospace;
@@ -896,6 +908,69 @@
   .release-entry ul{margin:0;padding-left:18px;}
   .release-entry li{font-size:12.5px;color:var(--text);line-height:1.6;}
   .release-empty{font-size:12.5px;color:var(--text-faint);padding:8px 2px;}
+
+  /* ============ CONNECT TABLES WIZARD ============ */
+  .connect-modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.5);
+    display:none;align-items:center;justify-content:center;z-index:60;
+  }
+  .connect-modal-backdrop.show{display:flex;}
+  .connect-modal{
+    width:min(760px, 94vw);max-height:86vh;
+    background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  }
+  .connect-modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 18px;border-bottom:1px solid var(--border-soft);
+  }
+  .connect-modal-head h3{font-size:14px;font-weight:700;color:var(--text);margin:0;}
+  .connect-modal-body{
+    display:flex;gap:14px;
+    padding:16px 18px;
+    overflow:hidden;
+  }
+  .connect-col{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .connect-col-label{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--text-faint);margin-bottom:10px;
+  }
+  .connect-arrow-col{
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-faint);font-size:18px;padding-top:34px;flex-shrink:0;
+  }
+  .connect-list{
+    margin-top:8px;
+    border:1px solid var(--border);border-radius:8px;
+    max-height:280px;overflow-y:auto;
+    background:var(--panel-2);
+  }
+  .connect-list::-webkit-scrollbar{width:7px;}
+  .connect-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  .connect-row{
+    display:flex;align-items:center;gap:8px;
+    padding:8px 10px;
+    cursor:pointer;
+    border-bottom:1px solid var(--border-soft);
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text);
+  }
+  .connect-row:last-child{border-bottom:none;}
+  .connect-row:hover{background:var(--panel);}
+  .connect-row.selected{background:var(--accent-dim);color:var(--accent);}
+  .connect-row input[type=checkbox]{accent-color:var(--accent);flex-shrink:0;margin:0;}
+  .connect-row .swatch{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+  .connect-row-empty{padding:14px 10px;font-size:11.5px;color:var(--text-faint);font-family:'Inter',sans-serif;}
+  .connect-modal-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:14px 18px;border-top:1px solid var(--border-soft);
+  }
+  .connect-modal-foot span{font-size:12px;color:var(--text-dim);}
+  .connect-modal-foot .btn{width:auto;padding:8px 16px;}
+  @media (max-width:640px){
+    .connect-modal-body{flex-direction:column;}
+    .connect-arrow-col{padding-top:0;transform:rotate(90deg);}
+  }
 
   /* node card in edit mode: draggable affordance */
   body.edit-on .node-card{cursor:move;}
@@ -1073,8 +1148,8 @@
       <div class="dt-mark">T</div>
       <div class="brand-text">
         <div class="eyebrow">Lineage Explorer</div>
-        <h1>Data Lineage — Team Template</h1>
-        <p>Replace with your team name</p>
+        <h1>Normalized Data Lineage</h1>
+        <p>Data Tribe · Deutsche Telekom</p>
       </div>
       <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Minimize menu (fullscreen lineage)" aria-label="Minimize menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"></path></svg>
@@ -1179,6 +1254,7 @@
               <select class="field-select" id="newTableCategory"><option value="source">Source Tables</option><option value="target">Target Tables</option><option value="view">Views</option><option value="cube">Cubes</option><option value="dashboard">Dashboards</option></select>
             </div>
             <button class="btn btn-primary" id="addTableBtn" style="margin-bottom:8px;">+ Add table</button>
+            <button class="btn" id="openConnectWizardBtn">🔗 Connect tables (wizard)</button>
           </div>
         </div>
 
@@ -1190,8 +1266,8 @@
     </div>
 
     <div class="sidebar-footer">
-      <div class="stat"><b id="statNodes">5</b> tables</div>
-      <div class="stat"><b id="statEdges">0</b> edges</div>
+      <div class="stat"><b id="statNodes">138</b> tables</div>
+      <div class="stat"><b id="statEdges">277</b> edges</div>
     </div>
   </aside>
 
@@ -1334,7 +1410,50 @@
   <div class="bq-popup-arrow"></div>
 </div>
 
-<script id="graph-data" type="application/json">{"nodes": [{"id": "placeholder-source", "label": "Example Source Table — rename or delete me", "x": 40, "y": 200, "w": 420, "h": 40, "category": "source"}, {"id": "placeholder-target", "label": "Example Target Table — rename or delete me", "x": 795, "y": 200, "w": 460, "h": 55, "category": "target"}, {"id": "placeholder-view", "label": "Example View — rename or delete me", "x": 1533.75, "y": 200, "w": 390, "h": 55, "category": "view"}, {"id": "placeholder-cube", "label": "Example Cube — rename or delete me", "x": 2195, "y": 200, "w": 260, "h": 60, "category": "cube"}, {"id": "placeholder-dashboard", "label": "Example Dashboard — rename or delete me", "x": 2717.5, "y": 200, "w": 420, "h": 65, "category": "dashboard"}], "edges": [], "releaseHistory": []}</script>
+<div class="connect-modal-backdrop" id="connectModalBackdrop">
+  <div class="connect-modal">
+    <div class="connect-modal-head">
+      <h3>Connect tables</h3>
+      <button class="detail-close" id="connectModalClose">✕</button>
+    </div>
+    <div class="connect-modal-body">
+      <div class="connect-col">
+        <div class="connect-col-label">From</div>
+        <div class="field-group">
+          <label class="field-label">Layer</label>
+          <select class="field-select" id="connectFromLayer"></select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Table</label>
+          <input type="text" class="field-input" id="connectFromSearch" placeholder="Search...">
+          <div class="connect-list" id="connectFromList"></div>
+        </div>
+      </div>
+      <div class="connect-arrow-col">→</div>
+      <div class="connect-col">
+        <div class="connect-col-label">To (select one or more)</div>
+        <div class="field-group">
+          <label class="field-label">Layer</label>
+          <select class="field-select" id="connectToLayer"></select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tables</label>
+          <input type="text" class="field-input" id="connectToSearch" placeholder="Search...">
+          <div class="connect-list connect-list-check" id="connectToList"></div>
+        </div>
+      </div>
+    </div>
+    <div class="connect-modal-foot">
+      <span id="connectSummary">Pick a source table, then check one or more targets.</span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" id="connectCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="connectCreateBtn" disabled>Connect</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="graph-data" type="application/json">{"nodes": [{"id": "placeholder-source-1", "label": "example_source_table", "x": 40, "y": 200, "w": 420, "h": 40, "category": "source"}, {"id": "placeholder-target-1", "label": "example_target_table", "x": 40, "y": 200, "w": 460, "h": 55, "category": "target"}, {"id": "placeholder-view-1", "label": "example_view", "x": 40, "y": 200, "w": 390, "h": 55, "category": "view"}, {"id": "placeholder-cube-1", "label": "Example Cube", "x": 40, "y": 200, "w": 260, "h": 60, "category": "cube"}, {"id": "placeholder-dashboard-1", "label": "Example Dashboard", "x": 40, "y": 200, "w": 420, "h": 65, "category": "dashboard"}], "edges": [{"source": "placeholder-source-1", "target": "placeholder-target-1"}, {"source": "placeholder-target-1", "target": "placeholder-view-1"}, {"source": "placeholder-view-1", "target": "placeholder-cube-1"}, {"source": "placeholder-cube-1", "target": "placeholder-dashboard-1"}], "releaseHistory": []}</script>
 <script>
 (function(){
   'use strict';
@@ -1352,7 +1471,7 @@
   CATS.forEach(c => CAT_MAP[c.key] = c);
 
   // ---------- BigQuery deep-linking ----------
-  const BQ_PROJECT = 'YOUR-GCP-PROJECT-ID'; // TODO: replace with your team's BigQuery project ID
+  const BQ_PROJECT = 'de0360-pkce-rubix-al-prd000';
   const BQ_CATEGORIES = new Set(['source', 'target', 'view']);
   const MSTR_CATEGORIES = new Set(['cube', 'dashboard']);
   function bigQueryInfo(n){
@@ -1534,7 +1653,6 @@
   function newId(){ return 'custom-' + Date.now().toString(36) + '-' + (idCounter++); }
 
   function recomputeCanvasSize(){
-    if(!nodes.length) return {w: 3200, h: 1200};
     const maxX = Math.max(...nodes.map(n=>n.x+n.w));
     const maxY = Math.max(...nodes.map(n=>n.y+n.h));
     return {w: maxX+60, h: maxY+60};
@@ -2283,8 +2401,18 @@
     const rect = svg.getBoundingClientRect();
     const screenX = rect.left + state.tx + (n.x + n.w / 2) * state.scale;
     const screenY = rect.top + state.ty + n.y * state.scale;
+
+    // If there isn't enough room above the node for the popup (it renders
+    // upward from this point), flip it to open downward instead — otherwise
+    // it goes off the top of the viewport and hides behind browser chrome
+    // like the bookmarks bar, with no way to reach it short of zooming out.
+    const estimatedHeight = bqPopup.offsetHeight || 140;
+    const nodeScreenH = n.h * state.scale;
+    const flip = (screenY - estimatedHeight - 24) < 0;
+    bqPopup.classList.toggle('flip-down', flip);
+
     bqPopup.style.left = screenX + 'px';
-    bqPopup.style.top = screenY + 'px';
+    bqPopup.style.top = (flip ? screenY + nodeScreenH : screenY) + 'px';
   }
 
   function showBqPopup(id){
@@ -2571,6 +2699,154 @@
   });
   document.getElementById('newTableName').addEventListener('keydown', (ev) => {
     if(ev.key === 'Enter') document.getElementById('addTableBtn').click();
+  });
+
+  // ---------- connect tables wizard ----------
+  // For diagrams with many nodes per layer, dragging a connector dot
+  // precisely onto the right target across a crowded canvas gets
+  // impractical. This wizard does the same addEdge() calls, just driven
+  // by layer + searchable list selection instead of pixel-precision drag.
+  const connectModalBackdrop = document.getElementById('connectModalBackdrop');
+  const connectFromLayer = document.getElementById('connectFromLayer');
+  const connectToLayer = document.getElementById('connectToLayer');
+  const connectFromSearch = document.getElementById('connectFromSearch');
+  const connectToSearch = document.getElementById('connectToSearch');
+  const connectFromList = document.getElementById('connectFromList');
+  const connectToList = document.getElementById('connectToList');
+  const connectSummary = document.getElementById('connectSummary');
+  const connectCreateBtn = document.getElementById('connectCreateBtn');
+
+  let wizardFromId = null;
+  const wizardToIds = new Set();
+
+  CATS.forEach(c => {
+    const o1 = document.createElement('option'); o1.value = c.key; o1.textContent = c.label;
+    connectFromLayer.appendChild(o1);
+    const o2 = document.createElement('option'); o2.value = c.key; o2.textContent = c.label;
+    connectToLayer.appendChild(o2);
+  });
+  connectToLayer.value = CATS[1] ? CATS[1].key : CATS[0].key;
+
+  function nodesInLayer(cat, searchText){
+    const q = searchText.trim().toLowerCase();
+    return nodes
+      .filter(n => n.category === cat)
+      .filter(n => !q || n.label.toLowerCase().includes(q))
+      .sort((a,b) => a.label.localeCompare(b.label));
+  }
+
+  function renderFromList(){
+    const cat = connectFromLayer.value;
+    const list = nodesInLayer(cat, connectFromSearch.value);
+    if(!list.length){
+      connectFromList.innerHTML = '<div class="connect-row-empty">No tables match.</div>';
+      return;
+    }
+    const cat_ = CAT_MAP[cat] || CAT_MAP.dashboard;
+    connectFromList.innerHTML = list.map(n => `
+      <div class="connect-row${n.id===wizardFromId ? ' selected' : ''}" data-id="${n.id}">
+        <span class="swatch" style="background:${cat_.color}"></span>
+        <span>${escapeHtml(n.label)}</span>
+      </div>`).join('');
+    connectFromList.querySelectorAll('.connect-row').forEach(row => {
+      row.addEventListener('click', () => {
+        wizardFromId = row.dataset.id;
+        wizardToIds.delete(wizardFromId);
+        renderFromList();
+        renderToList();
+        updateConnectFoot();
+      });
+    });
+  }
+
+  function renderToList(){
+    const cat = connectToLayer.value;
+    const list = nodesInLayer(cat, connectToSearch.value).filter(n => n.id !== wizardFromId);
+    if(!list.length){
+      connectToList.innerHTML = '<div class="connect-row-empty">No tables match.</div>';
+      return;
+    }
+    const cat_ = CAT_MAP[cat] || CAT_MAP.dashboard;
+    connectToList.innerHTML = list.map(n => `
+      <div class="connect-row" data-id="${n.id}">
+        <input type="checkbox" ${wizardToIds.has(n.id) ? 'checked' : ''}>
+        <span class="swatch" style="background:${cat_.color}"></span>
+        <span>${escapeHtml(n.label)}</span>
+      </div>`).join('');
+    connectToList.querySelectorAll('.connect-row').forEach(row => {
+      const id = row.dataset.id;
+      const toggle = () => {
+        if(wizardToIds.has(id)) wizardToIds.delete(id); else wizardToIds.add(id);
+        row.classList.toggle('selected', wizardToIds.has(id));
+        row.querySelector('input').checked = wizardToIds.has(id);
+        updateConnectFoot();
+      };
+      row.addEventListener('click', (ev) => { if(ev.target.tagName !== 'INPUT') toggle(); });
+      row.querySelector('input').addEventListener('change', toggle);
+    });
+  }
+
+  function updateConnectFoot(){
+    if(!wizardFromId){
+      connectSummary.textContent = 'Pick a source table, then check one or more targets.';
+      connectCreateBtn.disabled = true;
+      return;
+    }
+    const n = wizardToIds.size;
+    connectSummary.textContent = n
+      ? `"${labelOf(wizardFromId)}" → ${n} table${n===1?'':'s'} selected`
+      : `From "${labelOf(wizardFromId)}" — check one or more targets.`;
+    connectCreateBtn.disabled = n === 0;
+  }
+
+  function openConnectWizard(){
+    wizardFromId = state.selected && nodeById[state.selected] ? state.selected : null;
+    wizardToIds.clear();
+    if(wizardFromId) connectFromLayer.value = nodeById[wizardFromId].category;
+    connectFromSearch.value = '';
+    connectToSearch.value = '';
+    renderFromList();
+    renderToList();
+    updateConnectFoot();
+    connectModalBackdrop.classList.add('show');
+  }
+  function closeConnectWizard(){
+    connectModalBackdrop.classList.remove('show');
+  }
+
+  document.getElementById('openConnectWizardBtn').addEventListener('click', openConnectWizard);
+  document.getElementById('connectModalClose').addEventListener('click', closeConnectWizard);
+  document.getElementById('connectCancelBtn').addEventListener('click', closeConnectWizard);
+  connectModalBackdrop.addEventListener('click', (ev) => { if(ev.target === connectModalBackdrop) closeConnectWizard(); });
+  connectFromLayer.addEventListener('change', renderFromList);
+  connectToLayer.addEventListener('change', renderToList);
+  connectFromSearch.addEventListener('input', renderFromList);
+  connectToSearch.addEventListener('input', renderToList);
+
+  document.getElementById('connectCreateBtn').addEventListener('click', () => {
+    if(!wizardFromId || !wizardToIds.size) return;
+    const targets = [...wizardToIds];
+    pushUndo();
+    undoBatchDepth++;
+    let created = 0;
+    targets.forEach(tid => {
+      if(edgeList.some(e => e.source===wizardFromId && e.target===tid)) return;
+      edgeList.push({source:wizardFromId, target:tid});
+      outAdj[wizardFromId].push(tid);
+      inAdj[tid].push(wizardFromId);
+      created++;
+    });
+    undoBatchDepth--;
+    if(created){
+      logChange(`Connected "${labelOf(wizardFromId)}" → ${created} table${created===1?'':'s'} via wizard`);
+      drawAllEdges();
+      document.getElementById('statEdges').textContent = edgeList.length;
+      render();
+      showToast(`Created ${created} connection${created===1?'':'s'}.`);
+    } else {
+      showToast('Those connections already exist.');
+    }
+    closeConnectWizard();
   });
 
   // ---------- toast ----------
